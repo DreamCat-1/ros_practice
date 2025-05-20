@@ -1,0 +1,33 @@
+services:
+  ros-practice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ros_cuda_image:latest
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - DISPLAY=${DISPLAY}
+      - "ROS_MASTER_URI=http://localhost:11311"
+      - QT_X11_NO_MITSHM=1 # Fix a bug with QT
+      - DOCKER_UID=${DOCKER_UID}
+      - DOCKER_USER=${USER}
+
+    ports:
+      - "11311:11311"
+      - "8888:8888"
+
+    tty: true
+    stdin_open: true
+    privileged: true
+
+    working_dir: /root/catkin_ws/src
+    volumes:
+     # - ../dataset/:/root/datasets/
+      - ${HOME}/.Xauthority:${HOME}/.Xauthority:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /etc/sudoers.d:/etc/sudoers.d:ro
+      - ~/.ssh:/root/.ssh:ro
+      - ../:/root/
+      # command: /bin/bash
